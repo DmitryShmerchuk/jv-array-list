@@ -13,38 +13,6 @@ public class ArrayList<T> implements List<T> {
         elements = (T[]) new Object[DEFAULT_CAPACITY];
     }
 
-    private void ensureCapacity(int minCapacity) {
-        if (minCapacity > elements.length) {
-            int newCapacity = (int) (elements.length * GROW_FACTOR);
-            while (newCapacity < minCapacity) {
-                newCapacity = (int) (newCapacity * GROW_FACTOR);
-            }
-            T[] newElements = (T[]) new Object[newCapacity];
-            System.arraycopy(elements, 0, newElements, 0, size);
-            elements = newElements;
-        }
-    }
-
-    private void checkIndex(int index, boolean isAddOperation) {
-        boolean outOfBounds = isAddOperation
-                ? (index < 0 || index > size)
-                : (index < 0 || index >= size);
-
-        if (outOfBounds) {
-            throw new ArrayListIndexOutOfBoundsException(
-                    String.format(ERROR_MESSAGE, index, size)
-            );
-        }
-    }
-
-    private void checkAddIndex(int index) {
-        if (index < 0 || index > size) {
-            throw new ArrayListIndexOutOfBoundsException(
-                    String.format("Index %d is out of bounds for add() with size %d", index, size)
-            );
-        }
-    }
-
     @Override
     public void add(T value) {
         ensureCapacity(size + 1);
@@ -81,11 +49,9 @@ public class ArrayList<T> implements List<T> {
     }
 
     @Override
-    public T set(T value, int index) {
+    public void set(T value, int index) {
         checkIndex(index, false);
-        T oldValue = elements[index];
         elements[index] = value;
-        return oldValue;
     }
 
     @Override
@@ -100,8 +66,7 @@ public class ArrayList<T> implements List<T> {
     @Override
     public T remove(T element) {
         for (int i = 0; i < size; i++) {
-            if ((element == null && elements[i] == null)
-                    || (element != null && element.equals(elements[i]))) {
+            if (element == elements[i] || (element != null && element.equals(elements[i]))) {
                 return remove(i);
             }
         }
@@ -116,5 +81,37 @@ public class ArrayList<T> implements List<T> {
     @Override
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    private void ensureCapacity(int minCapacity) {
+        if (minCapacity > elements.length) {
+            int newCapacity = (int) (elements.length * GROW_FACTOR);
+            while (newCapacity < minCapacity) {
+                newCapacity = (int) (newCapacity * GROW_FACTOR);
+            }
+            T[] newElements = (T[]) new Object[newCapacity];
+            System.arraycopy(elements, 0, newElements, 0, size);
+            elements = newElements;
+        }
+    }
+
+    private void checkIndex(int index, boolean isAddOperation) {
+        boolean outOfBounds = isAddOperation
+                ? (index < 0 || index > size)
+                : (index < 0 || index >= size);
+
+        if (outOfBounds) {
+            throw new ArrayListIndexOutOfBoundsException(
+                    String.format(ERROR_MESSAGE, index, size)
+            );
+        }
+    }
+
+    private void checkAddIndex(int index) {
+        if (index < 0 || index > size) {
+            throw new ArrayListIndexOutOfBoundsException(
+                    String.format("Index %d is out of bounds for add() with size %d", index, size)
+            );
+        }
     }
 }
